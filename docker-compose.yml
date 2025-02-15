@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  # Zookeeper service, required by Kafka for cluster coordination
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+
+  # Kafka broker service
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      
+      # Allows larger message sizes (up to 50MB)
+      KAFKA_MESSAGE_MAX_BYTES: 50000000
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 50000000
+
+  # Producer service (builds from the local Dockerfile)
+  producer:
+    build: .
+    container_name: producer
+    depends_on:
+      - kafka
+    environment:
+      - SERVICE=producer
+    command: python producer.py
+
+  # Consumer service (builds from the local Dockerfile)
+  consumer:
+    build: .
+    container_name: consumer
+    depends_on:
+      - kafka
+    # Maps the local 'output' directory to '/app/output' inside the container
+    volumes:
+      - ./output:/app/output
+    environment:
+      - SERVICE=consumer
+    command: python consumer.py
