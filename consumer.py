@@ -32,6 +32,7 @@ def generate_report_chart(report_csv_filename):
     """
     Reads the data quality report CSV and creates a bar chart 
     showing the key metrics (e.g., total_records, missing fields, duplicates, anomalies).
+    Also displays the numeric value above each bar.
     """
     if not os.path.exists(report_csv_filename):
         print(f"Report file '{report_csv_filename}' not found. Cannot generate chart.")
@@ -54,8 +55,7 @@ def generate_report_chart(report_csv_filename):
         'duplicates',
         'anomaly_departureTime',
         'anomaly_arrivalTime',
-        # If you want to plot speed_outliers as well, add here:
-        'speed_outliers'
+        'speed_outliers'  # if you're tracking speed outliers
     ]
     # Filter only the columns that actually exist
     metrics = [m for m in metrics if m in df.columns]
@@ -64,12 +64,24 @@ def generate_report_chart(report_csv_filename):
     values = [row[m] for m in metrics]
 
     plt.figure(figsize=(10, 6))
-    plt.bar(metrics, values)
+    bars = plt.bar(metrics, values)
     plt.title("Data Quality Report Metrics")
     plt.xlabel("Metrics")
     plt.ylabel("Values")
     plt.xticks(rotation=45)
     plt.tight_layout()
+
+    # Add numeric labels above each bar
+    for bar in bars:
+        height = bar.get_height()
+        plt.annotate(
+            f'{int(height)}',  # or f'{height:.2f}' if you want decimals
+            xy=(bar.get_x() + bar.get_width() / 2, height),
+            xytext=(0, 3),  # offset points
+            textcoords="offset points",
+            ha='center',
+            va='bottom'
+        )
 
     # Save the chart as a PNG file in the same folder as the report CSV
     chart_filename = report_csv_filename.replace('.csv', '_chart.png')
