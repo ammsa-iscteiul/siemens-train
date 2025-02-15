@@ -15,27 +15,37 @@ producer_config = {
     # In librdkafka, use 'message.max.bytes' to increase the maximum message size
     'message.max.bytes': 50000000  # 50 MB
 }
-
 producer = Producer(producer_config)
 
-def fetch_data():
+def fetch_data_with_retry(max_retries=3, backoff_factor=2):
     """
-    Makes a request to the Digitraffic API and returns the data in JSON format.
+    Makes a request to the Digitraffic API with a retry logic in case of temporary failures.
+    - max_retries: maximum number of attempts
+    - backoff_factor: multiplier to increase wait time after each failure
+    Returns the JSON data or None if all retries fail.
     """
-    try:
-        response = requests.get(API_URL, timeout=15)
-        response.raise_for_status()
-        logging.info("Successfully obtained data from the Digitraffic API.")
-        return response.json()
-    except Exception as e:
-        logging.error(f"Error fetching data from the API: {e}")
-        return None
+    attempt = 1
+    wait_time = 2  # initial wait time (in seconds) before retry
+    while attempt <= max_retries:
+        try:
+            response = requests.get(API_URL, timeout=15)
+            response.raise_for_status()
+            logging.info(f"Attempt {attempt}: Successfully obtained data from the Digitraffic API.")
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Attempt {attempt} failed: {e}")
+            if attempt == max_retries:
+                logging.error("Max retries reached. Giving up on API call.")
+                return None
+            time.sleep(wait_time)
+            wait_time *= backoff_factor
+            attempt += 1
 
 def produce_data():
     """
-    Fetches data from the API and sends it to the Kafka topic.
+    Fetches data from the API (with retry) and sends it to the Kafka topic.
     """
-    data = fetch_data()
+    data = fetch_data_with_retry()
     if data:
         try:
             # Send the JSON list (which can be large) to Kafka
@@ -44,6 +54,8 @@ def produce_data():
             logging.info("Data successfully sent to Kafka.")
         except Exception as e:
             logging.error(f"Error sending data to Kafka: {e}")
+    else:
+        logging.error("Could not obtain data from the API after multiple retries.")
 
 def main():
     """

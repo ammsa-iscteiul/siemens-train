@@ -53,7 +53,9 @@ def generate_report_chart(report_csv_filename):
         'missing_arrivalTime',
         'duplicates',
         'anomaly_departureTime',
-        'anomaly_arrivalTime'
+        'anomaly_arrivalTime',
+        # If you want to plot speed_outliers as well, add here:
+        'speed_outliers'
     ]
     # Filter only the columns that actually exist
     metrics = [m for m in metrics if m in df.columns]
@@ -125,6 +127,18 @@ def process_buffer(buffer):
         else:
             anomalies[field] = 0
 
+    # >>> OUTLIER DETECTION EXAMPLE <<<
+    # Suppose there's a numeric column "speed" that should be between 0 and 300
+    speed_outliers = 0
+    if 'speed' in df.columns:
+        # Condition for outliers: speed < 0 or speed > 300
+        condition = (df['speed'] < 0) | (df['speed'] > 300)
+        speed_outliers = condition.sum()
+
+        # Optionally correct them (e.g., set negative speeds to 0, speeds above 300 to 300)
+        df.loc[df['speed'] < 0, 'speed'] = 0
+        df.loc[df['speed'] > 300, 'speed'] = 300
+
     # Build a DataFrame for the report
     report_data = {
         'total_records': [report['total_records']],
@@ -133,7 +147,9 @@ def process_buffer(buffer):
         'missing_arrivalTime': [missing_values.get('arrivalTime', 0)],
         'duplicates': [duplicates],
         'anomaly_departureTime': [anomalies.get('departureTime', 0)],
-        'anomaly_arrivalTime': [anomalies.get('arrivalTime', 0)]
+        'anomaly_arrivalTime': [anomalies.get('arrivalTime', 0)],
+        # Add speed_outliers to the report
+        'speed_outliers': [int(speed_outliers)]
     }
     report_df = pd.DataFrame(report_data)
 

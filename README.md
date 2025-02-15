@@ -39,7 +39,7 @@ How to Build and Run with Docker
 
     Navigate to the project directory:
 
-cd siemens-data-engineer
+cd siemens-train
 
 Start the containers using Docker Compose:
 
@@ -71,7 +71,6 @@ How to Run the Ingestion Script (Producer) and Generate the Report (Consumer)
 
     Producer (producer.py):
         Periodically (every X seconds) calls the Digitraffic API and sends data to the live_trains Kafka topic.
-        Includes basic error handling; can be expanded with a more advanced retry logic.
 
     Consumer (consumer.py):
         Consumes messages from the live_trains topic.
@@ -83,7 +82,7 @@ How to Run the Ingestion Script (Producer) and Generate the Report (Consumer)
 Example Outputs
 1. Data Quality Report
 
-output/reports/data_quality_report_20250215_183000.csv:
+output/reports/data_quality_report_YYYYMMDD_HHMMSS.csv:
 
 total_records,missing_trainNumber,missing_departureTime,missing_arrivalTime,duplicates,anomaly_departureTime,anomaly_arrivalTime
 100,0,50,50,3,50,50
@@ -98,12 +97,12 @@ Interpretation:
 
 2. Chart
 
-output/reports/data_quality_report_20250215_183000_chart.png:
+output/reports/data_quality_report_YYYYMMDD_HHMMSS.png:
 
 A bar chart illustrating total_records, missing_trainNumber, missing_departureTime, etc.
 3. Standardized Data
 
-output/cleaned/cleaned_data_20250215_183000.csv (sample lines):
+output/cleaned/cleaned_data_YYYYMMDD_HHMMSS.csv (sample lines):
 
 trainNumber,departureTime,arrivalTime,operator,...
 123,2025-02-15,2025-02-15,VR,...
@@ -114,11 +113,3 @@ trainNumber,departureTime,arrivalTime,operator,...
     Duplicates removed.
     Whitespace trimmed from string fields.
 
-Final Notes
-
-    Scalability: For high volumes, consider increasing partitions in the Kafka topic and running multiple consumers in a group.
-    Extensibility:
-        Improve retry logic in the Producer for better handling of API instability.
-        Integrate with scheduling/orchestration tools (Airflow, cron jobs) for automated ingestion.
-    Production Environment:
-        Configure persistent storage, observability tools, etc., if needed.
