@@ -177,6 +177,7 @@ def process_buffer(buffer):
     cleaned_csv_filename = os.path.join(CLEANED_DIR, f"cleaned_data_{now_str}.csv")
     cleaned_json_filename = os.path.join(CLEANED_DIR, f"cleaned_data_{now_str}.json")
     try:
+        df = df.where(pd.notna(df), None)  # Substitui NaN por None (vira null no JSON)
         with open(cleaned_json_filename, "w", encoding="utf-8") as f:
             json.dump(df.to_dict(orient="records"), f, indent=4, ensure_ascii=False)
         df.to_csv(cleaned_csv_filename, index=False)
