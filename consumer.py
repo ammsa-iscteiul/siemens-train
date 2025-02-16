@@ -33,7 +33,7 @@ all_processed_data = pd.DataFrame()
 
 # Reads the data quality report CSV and creates a bar chart
 def generate_report_chart(report_csv_filename):
-    """Lê o relatório CSV e gera um gráfico de barras."""
+    """Reads the report CSV and generates a bar chart."""
     
     if not os.path.exists(report_csv_filename):
         logging.error(f"Report file '{report_csv_filename}' not found. Cannot generate chart.")
@@ -46,12 +46,12 @@ def generate_report_chart(report_csv_filename):
         return
 
     try:
-        # Convertendo os valores corretamente
+        # Correctly convert values
         report_data = df.iloc[0].to_dict()
         metrics = list(report_data.keys())
         values = list(report_data.values())
 
-        # Criar o gráfico
+        # Create the chart
         plt.figure(figsize=(10, 6))
         bars = plt.bar(metrics, values, color="blue")
         plt.title("Data Quality Report Metrics")
@@ -60,7 +60,7 @@ def generate_report_chart(report_csv_filename):
         plt.xticks(rotation=45)
         plt.tight_layout()
 
-        # Adicionar os valores no topo das barras
+        # Add values on top of the bars
         for bar in bars:
             height = bar.get_height()
             plt.annotate(f'{int(height)}', 
@@ -69,7 +69,7 @@ def generate_report_chart(report_csv_filename):
                          textcoords="offset points",
                          ha='center', va='bottom')
 
-        # Definir o nome correto do ficheiro do gráfico
+        # Define the correct filename for the chart
         chart_filename = report_csv_filename.replace('.csv', '_chart.png')
         plt.savefig(chart_filename)
         plt.close()
@@ -177,7 +177,7 @@ def process_buffer(buffer):
     cleaned_csv_filename = os.path.join(CLEANED_DIR, f"cleaned_data_{now_str}.csv")
     cleaned_json_filename = os.path.join(CLEANED_DIR, f"cleaned_data_{now_str}.json")
     try:
-        df = df.where(pd.notna(df), None)  # Substitui NaN por None (vira null no JSON)
+        df = df.where(pd.notna(df), None)  # Replace NaN with None (becomes null in JSON)
         with open(cleaned_json_filename, "w", encoding="utf-8") as f:
             json.dump(df.to_dict(orient="records"), f, indent=4, ensure_ascii=False)
         df.to_csv(cleaned_csv_filename, index=False)
