@@ -85,18 +85,16 @@ Example Outputs
 output/reports/data_quality_report_YYYYMMDD_HHMMSS.csv:
 
 Sample Report:
-total_records	missing_trainNumber	missing_departureDate	missing_arrivalDate	duplicates	invalid_trainNumber	invalid_departureDate	invalid_arrivalDate
-3192	0	0	0	0	0	0	0
+total_records, missing_trainNumber, missing_departureDate, missing_arrivalDate, duplicates 
+3192, 0, 0, 0, 0
+
 2. Interpretation:
 
-    total_records = 3192 → A total of 3192 train records were processed.
-    missing_trainNumber = 0 → No records had a missing trainNumber.
-    missing_departureDate = 0 → No records had a missing departureDate.
-    missing_arrivalDate = 0 → No records had a missing arrivalDate.
-    duplicates = 0 → No duplicate records were found based on trainNumber and scheduledTime.
-    invalid_trainNumber = 0 → No records had an invalid or incorrectly formatted trainNumber.
-    invalid_departureDate = 0 → No records had an invalid departureDate.
-    invalid_arrivalDate = 0 → No records had an invalid arrivalDate.
+- `total_records = 3192` → **3192 train records were processed**.
+- `missing_trainNumber = 0` → **No records were missing `trainNumber`**.
+- `missing_departureDate = 0` → **No records were missing `departureDate`**.
+- `missing_arrivalDate = 0` → **No records were missing `arrivalDate`**.
+- `duplicates = 0` → **No duplicate records found based on `trainNumber + scheduledTime`**.
 
 2. Chart
 
@@ -107,17 +105,14 @@ A bar chart visually representing the key metrics from the data quality report, 
     Total records processed
     Missing values (train number, departure date, arrival date)
     Duplicate records
-    Invalid date formats
-    Unexpected data types (if applicable)
-    
+
 3. Standardized Data
 
 output/cleaned/cleaned_data_YYYYMMDD_HHMMSS.csv (sample lines):
 
 Sample Data:
-trainNumber	departureDate	arrivalDate	operatorShortCode	trainType	trainCategory	cancelled
-123	2025-02-15	2025-02-15	VR	IC	Long-distance	False
-124	2025-02-15	2025-02-15	VR	IC	Long-distance	False
+The JSON file preserves the original `response.json` structure, including `timeTableRows`.
+
 5. Data Cleaning & Standardization:
 
     Date standardization: departureDate and arrivalDate are converted to YYYY-MM-DD format.
