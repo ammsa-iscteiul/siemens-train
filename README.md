@@ -84,17 +84,19 @@ Example Outputs
 
 output/reports/data_quality_report_YYYYMMDD_HHMMSS.csv:
 
-total_records,missing_trainNumber,missing_departureTime,missing_arrivalTime,duplicates,invalid_date_format,unexpected_data_types
-100,0,50,50,3,50,2
+Sample Report:
+total_records	missing_trainNumber	missing_departureDate	missing_arrivalDate	duplicates	invalid_trainNumber	invalid_departureDate	invalid_arrivalDate
+3192	0	0	0	0	0	0	0
+2. Interpretation:
 
-Interpretation:
-
-    total_records = 100 → A total of 100 records were processed.
-    missing_trainNumber = 0 → No records were missing the train number.
-    missing_departureTime = 50 and missing_arrivalTime = 50 → 50 records had missing departure or arrival times.
-    duplicates = 3 → 3 duplicate records were found based on trainNumber and departureTime.
-    invalid_date_format = 50 → 50 records had incorrectly formatted or missing dates.
-    unexpected_data_types = 2 → 2 records contained unexpected data types (e.g., non-numeric values in numerical fields).
+    total_records = 3192 → A total of 3192 train records were processed.
+    missing_trainNumber = 0 → No records had a missing trainNumber.
+    missing_departureDate = 0 → No records had a missing departureDate.
+    missing_arrivalDate = 0 → No records had a missing arrivalDate.
+    duplicates = 0 → No duplicate records were found based on trainNumber and scheduledTime.
+    invalid_trainNumber = 0 → No records had an invalid or incorrectly formatted trainNumber.
+    invalid_departureDate = 0 → No records had an invalid departureDate.
+    invalid_arrivalDate = 0 → No records had an invalid arrivalDate.
 
 2. Chart
 
@@ -103,23 +105,22 @@ output/reports/data_quality_report_YYYYMMDD_HHMMSS.png:
 A bar chart visually representing the key metrics from the data quality report, including:
 
     Total records processed
-    Missing values (e.g., train number, departure time, arrival time)
+    Missing values (train number, departure date, arrival date)
     Duplicate records
     Invalid date formats
-    Unexpected data types
-
+    Unexpected data types (if applicable)
+    
 3. Standardized Data
 
 output/cleaned/cleaned_data_YYYYMMDD_HHMMSS.csv (sample lines):
 
-trainNumber,departureTime,arrivalTime,operatorShortCode,trainType,trainCategory,cancelled
-123,2025-02-15T08:30:00.000Z,2025-02-15T12:45:00.000Z,VR,IC,Long-distance,False
-124,2025-02-15T09:00:00.000Z,2025-02-15T13:15:00.000Z,VR,IC,Long-distance,False
-...
+Sample Data:
+trainNumber	departureDate	arrivalDate	operatorShortCode	trainType	trainCategory	cancelled
+123	2025-02-15	2025-02-15	VR	IC	Long-distance	False
+124	2025-02-15	2025-02-15	VR	IC	Long-distance	False
+5. Data Cleaning & Standardization:
 
-  Data cleaning and standardization applied:
-
-    Date standardization: departureTime and arrivalTime converted to ISO 8601 format (YYYY-MM-DDTHH:MM:SS.sssZ).
-    Duplicates removed: Identical records based on trainNumber and departureTime were eliminated.
-    Whitespace trimmed: Leading/trailing spaces removed from all string fields to ensure consistency.
+    Date standardization: departureDate and arrivalDate are converted to YYYY-MM-DD format.
+    Duplicate removal: Identical records based on trainNumber and scheduledTime were eliminated.
+    Whitespace trimming: Leading/trailing spaces were removed from all string fields.
 
