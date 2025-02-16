@@ -50,7 +50,7 @@ docker-compose up --build
         Start Zookeeper and Kafka.
         Start the producer and consumer services.
 
-Check the logs:
+Check the logs (Optional):
 
     In the same terminal, you will see logs for both Producer (sending data to Kafka) and Consumer (generating reports and standardized data).
 
@@ -84,32 +84,42 @@ Example Outputs
 
 output/reports/data_quality_report_YYYYMMDD_HHMMSS.csv:
 
-total_records,missing_trainNumber,missing_departureTime,missing_arrivalTime,duplicates,anomaly_departureTime,anomaly_arrivalTime
-100,0,50,50,3,50,50
+total_records,missing_trainNumber,missing_departureTime,missing_arrivalTime,duplicates,invalid_date_format,unexpected_data_types
+100,0,50,50,3,50,2
 
 Interpretation:
 
-    total_records = 100 → 100 records processed.
-    missing_trainNumber = 0 → No records missing the train number.
-    missing_departureTime = 50 and missing_arrivalTime = 50 → Half the records had no departure/arrival times.
-    duplicates = 3 → Found 3 duplicates based on trainNumber + timestamp.
-    anomaly_departureTime = 50 and anomaly_arrivalTime = 50 → Those 50 records had invalid/missing date fields.
+    total_records = 100 → A total of 100 records were processed.
+    missing_trainNumber = 0 → No records were missing the train number.
+    missing_departureTime = 50 and missing_arrivalTime = 50 → 50 records had missing departure or arrival times.
+    duplicates = 3 → 3 duplicate records were found based on trainNumber and departureTime.
+    invalid_date_format = 50 → 50 records had incorrectly formatted or missing dates.
+    unexpected_data_types = 2 → 2 records contained unexpected data types (e.g., non-numeric values in numerical fields).
 
 2. Chart
 
 output/reports/data_quality_report_YYYYMMDD_HHMMSS.png:
 
-A bar chart illustrating total_records, missing_trainNumber, missing_departureTime, etc.
+A bar chart visually representing the key metrics from the data quality report, including:
+
+    Total records processed
+    Missing values (e.g., train number, departure time, arrival time)
+    Duplicate records
+    Invalid date formats
+    Unexpected data types
+
 3. Standardized Data
 
 output/cleaned/cleaned_data_YYYYMMDD_HHMMSS.csv (sample lines):
 
-trainNumber,departureTime,arrivalTime,operator,...
-123,2025-02-15,2025-02-15,VR,...
-123,2025-02-15,2025-02-15,VR,...
+trainNumber,departureTime,arrivalTime,operatorShortCode,trainType,trainCategory,cancelled
+123,2025-02-15T08:30:00.000Z,2025-02-15T12:45:00.000Z,VR,IC,Long-distance,False
+124,2025-02-15T09:00:00.000Z,2025-02-15T13:15:00.000Z,VR,IC,Long-distance,False
 ...
 
-    departureTime and arrivalTime columns converted to YYYY-MM-DD.
-    Duplicates removed.
-    Whitespace trimmed from string fields.
+  Data cleaning and standardization applied:
+
+    Date standardization: departureTime and arrivalTime converted to ISO 8601 format (YYYY-MM-DDTHH:MM:SS.sssZ).
+    Duplicates removed: Identical records based on trainNumber and departureTime were eliminated.
+    Whitespace trimmed: Leading/trailing spaces removed from all string fields to ensure consistency.
 

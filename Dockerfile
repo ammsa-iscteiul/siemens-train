@@ -13,6 +13,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the remaining application files into the container
 COPY . .
 
-# By default, the container will start by running the producer script
-# (this can be overridden in docker-compose if needed)
+# The container will start by running the producer script
 CMD ["python", "producer.py"]

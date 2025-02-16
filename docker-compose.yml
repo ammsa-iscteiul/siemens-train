@@ -46,7 +46,6 @@ services:
     container_name: consumer
     depends_on:
       - kafka
-    # Maps the local 'output' directory to '/app/output' inside the container
     volumes:
       - ./output:/app/output
     environment:
